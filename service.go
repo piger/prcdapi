@@ -40,10 +40,14 @@ func NewServer(g *Grimoire) *Server {
 	rJSON := r.Headers("Content-Type", "application/json").Subrouter()
 	rJSON.HandleFunc("/prcd", s.prcdRandomJSONHandler())
 	rJSON.HandleFunc("/prcd/{section}", s.prcdJSONHandler())
+	rJSON.HandleFunc("/sections", s.prcdSectionsJSONHandler())
+	rJSON.HandleFunc("/", s.prcdRandomJSONHandler())
 
 	rJSONa := r.Headers("Accept", "application/json").Subrouter()
 	rJSONa.HandleFunc("/prcd", s.prcdRandomJSONHandler())
 	rJSONa.HandleFunc("/prcd/{section}", s.prcdJSONHandler())
+	rJSONa.HandleFunc("/sections", s.prcdSectionsJSONHandler())
+	rJSONa.HandleFunc("/", s.prcdRandomJSONHandler())
 
 	r.HandleFunc("/prcd/{section}", s.prcdHandler())
 	r.HandleFunc("/prcd", s.prcdRandomHandler())
@@ -61,6 +65,13 @@ func (s *Server) prcdSectionsHandler() http.HandlerFunc {
 		if _, err := w.Write([]byte(strings.Join(sections, " ") + "\n")); err != nil {
 			log.Print(err)
 		}
+	}
+}
+
+func (s *Server) prcdSectionsJSONHandler() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		sections := s.db.GetSections()
+		respondJSON(w, sections, 200)
 	}
 }
 
