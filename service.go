@@ -28,12 +28,10 @@ func NewServer(g *Grimoire) *Server {
 
 func (s *Server) prcdSectionsHandler() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		sections := make([]string, 0, len(s.db.Sections))
-		for section := range s.db.Sections {
-			sections = append(sections, section)
+		sections := s.db.GetSections()
+		if _, err := w.Write([]byte(strings.Join(sections, " "))); err != nil {
+			log.Print(err)
 		}
-
-		w.Write([]byte(strings.Join(sections, " ")))
 	}
 }
 
@@ -42,9 +40,12 @@ func (s *Server) prcdRandomHandler() http.HandlerFunc {
 		moccolo, err := s.db.FromRandomSection()
 		if err != nil {
 			log.Print(err)
-			return
+			http.Error(w, "Internal error", http.StatusInternalServerError)
+		} else {
+			if _, err := w.Write([]byte(fmt.Sprintf("%s (%s)\n", moccolo.Text, moccolo.Author))); err != nil {
+				log.Print(err)
+			}
 		}
-		w.Write([]byte(fmt.Sprintf("%s (%s)\n", moccolo.Text, moccolo.Author)))
 	}
 }
 
@@ -53,15 +54,19 @@ func (s *Server) prcdHandler() http.HandlerFunc {
 		vars := mux.Vars(r)
 		sectionName, ok := vars["section"]
 		if !ok {
-			log.Print("no section?")
+			http.Error(w, "Internal error: Section not found", http.StatusInternalServerError)
 			return
 		}
+
 		moccolo, err := s.db.FromSection(sectionName)
 		if err != nil {
 			log.Print(err)
-			return
+			http.Error(w, "Internal error", http.StatusInternalServerError)
+		} else {
+			if _, err := w.Write([]byte(fmt.Sprintf("%s (%s)\n", moccolo.Text, moccolo.Author))); err != nil {
+				log.Print(err)
+			}
 		}
-		w.Write([]byte(fmt.Sprintf("%s (%s)\n", moccolo.Text, moccolo.Author)))
 	}
 }
 

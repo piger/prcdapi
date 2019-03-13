@@ -69,6 +69,16 @@ func (g *Grimoire) FromRandomSection() (*Moccolo, error) {
 	return g.FromSection(section)
 }
 
+// GetSections returns a list of all the available PRCD Sections.
+func (g *Grimoire) GetSections() []string {
+	sections := make([]string, 0, len(g.Sections))
+	for section := range g.Sections {
+		sections = append(sections, section)
+	}
+
+	return sections
+}
+
 var mre = regexp.MustCompile(`(.*?)\s*\(([^)]+)\)$`)
 
 // LoadPrcdFile loads a text file containing a prcd database.
