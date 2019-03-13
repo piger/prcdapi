@@ -20,30 +20,35 @@ type Moccolo struct {
 	Text string
 }
 
-// Section is a container of Moccoli
+// Section is a container of Moccoli.
 type Section struct {
 	Name    string
 	Entries []Moccolo
 }
 
+// Grimoire is a container of Sections.
 type Grimoire struct {
 	Sections map[string]Section
 }
 
+// NewGrimoire creates a new Grimoire.
 func NewGrimoire() *Grimoire {
 	g := &Grimoire{Sections: make(map[string]Section)}
 	return g
 }
 
+// AddSection adds a new Section to the Grimoire.
 func (g *Grimoire) AddSection(section Section) {
 	g.Sections[section.Name] = section
 }
 
+// HasSection checks if the Grimoire contains a Section,
 func (g *Grimoire) HasSection(name string) bool {
 	_, ok := g.Sections[name]
 	return ok
 }
 
+// FromSection returns a random Moccolo from a Section.
 func (g *Grimoire) FromSection(name string) (*Moccolo, error) {
 	if !g.HasSection(name) {
 		return nil, fmt.Errorf("Section %s does not exist", name)
@@ -52,6 +57,7 @@ func (g *Grimoire) FromSection(name string) (*Moccolo, error) {
 	return &g.Sections[name].Entries[i], nil
 }
 
+// FromSection returns a random Moccolo from a random Section.
 func (g *Grimoire) FromRandomSection() (*Moccolo, error) {
 	sections := make([]string, 0, len(g.Sections))
 	for section := range g.Sections {
@@ -108,6 +114,7 @@ func LoadPrcdFile(filename string) ([]Moccolo, error) {
 	return result, nil
 }
 
+// LoadPrcdDir loads all the prcd files found in the given directory.
 func LoadPrcdDir(path string) (*Grimoire, error) {
 	matches, err := filepath.Glob(filepath.Join(path, "prcd_*.txt"))
 	if err != nil {
