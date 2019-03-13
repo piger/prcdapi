@@ -13,11 +13,14 @@ import (
 
 // Moccolo is a prcd from a prcd database.
 type Moccolo struct {
-	// Author is the author of the prcd
-	Author string
+	// Author is the author of the prcd.
+	Author string `json:"author"`
 
-	// Text is the text of the prcd
-	Text string
+	// Text is the text of the prcd.
+	Text string `json:"text"`
+
+	// Section is the Section where this Moccolo comes from; this is only needed for serialization.
+	Section string `json:"section,omitempty"`
 }
 
 // Section is a container of Moccoli.
@@ -58,7 +61,7 @@ func (g *Grimoire) FromSection(name string) (*Moccolo, error) {
 }
 
 // FromSection returns a random Moccolo from a random Section.
-func (g *Grimoire) FromRandomSection() (*Moccolo, error) {
+func (g *Grimoire) FromRandomSection() (*Moccolo, string, error) {
 	sections := make([]string, 0, len(g.Sections))
 	for section := range g.Sections {
 		sections = append(sections, section)
@@ -66,7 +69,8 @@ func (g *Grimoire) FromRandomSection() (*Moccolo, error) {
 
 	i := rand.Intn(len(sections))
 	section := sections[i]
-	return g.FromSection(section)
+	moccolo, err := g.FromSection(section)
+	return moccolo, section, err
 }
 
 // GetSections returns a list of all the available PRCD Sections.

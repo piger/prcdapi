@@ -66,12 +66,12 @@ func (s *Server) prcdSectionsHandler() http.HandlerFunc {
 
 func (s *Server) prcdRandomHandler() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		moccolo, err := s.db.FromRandomSection()
+		moccolo, section, err := s.db.FromRandomSection()
 		if err != nil {
 			log.Print(err)
 			http.Error(w, "Internal error: fetching moccolo.", http.StatusInternalServerError)
 		} else {
-			if _, err := w.Write([]byte(fmt.Sprintf("%s (%s)\n", moccolo.Text, moccolo.Author))); err != nil {
+			if _, err := w.Write([]byte(fmt.Sprintf("%s (%s) [%s]\n", moccolo.Text, moccolo.Author, section))); err != nil {
 				log.Print(err)
 			}
 		}
@@ -80,11 +80,12 @@ func (s *Server) prcdRandomHandler() http.HandlerFunc {
 
 func (s *Server) prcdRandomJSONHandler() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		moccolo, err := s.db.FromRandomSection()
+		moccolo, section, err := s.db.FromRandomSection()
 		if err != nil {
 			log.Print(err)
 			respondJSONError(w, "Error fetching a random Moccolo.", http.StatusInternalServerError)
 		} else {
+			moccolo.Section = section
 			respondJSON(w, moccolo, 200)
 		}
 	}
