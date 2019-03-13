@@ -21,6 +21,7 @@ func NewServer(g *Grimoire) *Server {
 	r.HandleFunc("/prcd/{section}", s.prcdHandler())
 	r.HandleFunc("/prcd", s.prcdRandomHandler())
 	r.HandleFunc("/sections", s.prcdSectionsHandler())
+	r.HandleFunc("/", s.prcdRandomHandler())
 	http.Handle("/", r)
 
 	return s
