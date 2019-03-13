@@ -9,10 +9,12 @@ import (
 	"github.com/gorilla/mux"
 )
 
+// Server expose the PRCD API via HTTP.
 type Server struct {
 	db *Grimoire
 }
 
+// NewServer returns a new PRCD API Server.
 func NewServer(g *Grimoire) *Server {
 	s := &Server{db: g}
 	r := mux.NewRouter()
@@ -63,6 +65,7 @@ func (s *Server) prcdHandler() http.HandlerFunc {
 	}
 }
 
-func (s *Server) Serve() {
-	log.Fatal(http.ListenAndServe("127.0.0.1:8080", nil))
+// Serve starts the HTTP handler.
+func (s *Server) Serve(address string) {
+	log.Fatal(http.ListenAndServe(address, nil))
 }
