@@ -30,7 +30,7 @@ func NewServer(g *Grimoire) *Server {
 func (s *Server) prcdSectionsHandler() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		sections := s.db.GetSections()
-		if _, err := w.Write([]byte(strings.Join(sections, " "))); err != nil {
+		if _, err := w.Write([]byte(strings.Join(sections, " ") + "\n")); err != nil {
 			log.Print(err)
 		}
 	}
